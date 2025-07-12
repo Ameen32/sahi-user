@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahithyotsav Results Bot</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+
+
+  
+</head>
+<body>
+    <div id="initial-screen" class="screen active">
+        <img src="your_full_image.jpeg" alt="Sahithyotsav" class="full-background-image">
+        <div class="initial-content">
+            <h1 class="logo-title">Sahithyotsav</h1>
+            <p class="subtitle">Results</p>
+            <button id="get-results-btn">Get Results</button>
+        </div>
+    </div>
+
+    <div id="chatbot-screen" class="screen">
+        <div class="chatbot-header">Sahithyotsav Results Bot</div>
+        <div class="chat-area" id="chat-area"></div>
+        <div class="input-area">
+            <button id="start-button" class="start-button">Start</button>
+            <input type="text" id="user-input" placeholder="Or type a program or category name..." disabled>
+            <button id="send-button" class="send-button" disabled>↑</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
