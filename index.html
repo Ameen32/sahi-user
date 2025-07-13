@@ -7,27 +7,26 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
-    <style>
-
-    </style>
 </head>
 <body>
     <div id="initial-screen" class="screen active">
         <img src="your_full_image.jpeg" alt="Sahithyotsav" class="full-background-image">
-        <div class="initial-content">
-            <h1 class="logo-title">Sahithyotsav</h1>
-            <p class="subtitle">Results</p>
-            <button id="get-results-btn">Get Results</button>
-        </div>
+        <button id="get-results-btn">Get Results</button>
+        
     </div>
 
     <div id="chatbot-screen" class="screen">
         <div class="chatbot-header">Sahithyotsav Results Bot</div>
-        <div class="chat-area" id="chat-area"></div>
+        <div class="chat-area" id="chat-area">
+        </div>
         <div class="input-area">
+            <!-- ഇൻപുട്ട് ഫീൽഡും സെൻഡ് ബട്ടണും ഒഴിവാക്കി -->
             <button id="start-button" class="start-button">Start</button>
+            <!-- "Back to Categories" ബട്ടൺ, സ്വതേ മറഞ്ഞിരിക്കും -->
+            <button id="back-to-categories-btn" class="back-button" style="display: none;">Back to Categories</button>
         </div>
     </div>
-   <script src="script.js"></script>
+
+    <script src="script.js"></script>
 </body>
 </html>
