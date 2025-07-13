@@ -1,4 +1,5 @@
-const firebaseConfig = {
+// Firebase Configuration
+        const firebaseConfig = {
             apiKey: "AIzaSyAzb3jbndemY5w3nkwk-sdIxLmYV0Qj9WQ",
             authDomain: "sahithyotsav-results-288f2.firebaseapp.com",
             databaseURL: "https://sahithyotsav-results-288f2-default-rtdb.asia-southeast1.firebasedatabase.app",
