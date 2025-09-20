@@ -5,7 +5,6 @@ body {
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
   color: #e0e0e0;
   min-height: 100vh;
-  overflow: hidden; /* Stop page scroll */
 }
 
 /* Screens */
@@ -100,3 +99,4 @@ body {
   margin-top:.5rem; padding:.5rem .8rem; border-radius: 20px;
   background: linear-gradient(45deg,#667eea,#764ba2); color:#fff;
 }
+
