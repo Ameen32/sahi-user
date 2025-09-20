@@ -1,13 +1,5 @@
-// Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyAzb3jbndemY5w3nkwk-sdIxLmYV0Qj9WQ",
-  authDomain: "sahithyotsav-results-288f2.firebaseapp.com",
-  databaseURL: "https://sahithyotsav-results-288f2-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "sahithyotsav-results-288f2",
-  storageBucket: "sahithyotsav-results-288f2.firebasestorage.app",
-  messagingSenderId: "601783689113",
-  appId: "1:601783689113:web:cba8bff9cdc4a1aac43d08"
-};
+// Firebase config
+const firebaseConfig = { /* ...നിന്റെ config 그대로... */ };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
