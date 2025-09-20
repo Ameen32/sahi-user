@@ -59,16 +59,26 @@ body {
 
 /* Input area (stays at bottom) */
 .input-area {
+  flex-shrink: 0;
+  padding: 1rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom)); /* 👈 safe area */
   flex-shrink: 0; padding: 1rem;
   background: linear-gradient(135deg,#2a2a3e,#3a3a5a);
   border-top: 1px solid rgba(255,255,255,0.08);
 }
 
 .start-button {
-  width: 100%; padding: 1rem; border-radius: 12px; font-size: 1.05rem; font-weight: 600;
-  border: none; cursor: pointer; background: linear-gradient(45deg,#667eea,#764ba2); color: white;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(45deg,#667eea,#764ba2);
+  color: white;
   box-shadow: 0 4px 15px rgba(102,126,234,0.3);
-  margin-bottom: 50px;   /* 👈 extra space bottom → button will move a bit up */
+  margin-bottom: 10px; /* 👈 extra gap from bottom */
 }
 .start-button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
 
@@ -113,5 +123,6 @@ body {
   .chatbot-header { padding: 0.9rem; font-size: 1.05rem; }
   .message-bubble { max-width: 90%; }
 }
+
 
 
