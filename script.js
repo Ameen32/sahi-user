@@ -175,7 +175,7 @@ getBtn.addEventListener("click", () => {
   initialScreen.classList.remove("active");
   chatbotScreen.classList.add("active");
   chatArea.innerHTML = "";
-  addMessage("Welcome to the Sahithyotsav Results Bot!");
+  addMessage("Welcome to the Maslak 2K25 Results Bot!");
   startBtn.style.display = "block";
 });
 
@@ -191,3 +191,4 @@ backBtn.addEventListener("click", () => {
   startBtn.style.display = "block";
   backBtn.style.display = "none";
 });
+
