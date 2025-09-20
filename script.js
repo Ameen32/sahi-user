@@ -1,7 +1,4 @@
-// script.js
-// Complete functional JS with transitions, typing bubbles, spinner, caching, and Firebase usage
-
-// ---------- Firebase config (keep yours) ----------
+// ---------------- Firebase Configuration (kept as you provided) ----------------
 const firebaseConfig = {
   apiKey: "AIzaSyAzb3jbndemY5w3nkwk-sdIxLmYV0Qj9WQ",
   authDomain: "sahithyotsav-results-288f2.firebaseapp.com",
@@ -11,10 +8,12 @@ const firebaseConfig = {
   messagingSenderId: "601783689113",
   appId: "1:601783689113:web:cba8bff9cdc4a1aac43d08"
 };
+
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
-// ---------- Elements ----------
+// ---------------- Element references ----------------
 const initialScreen = document.getElementById('initial-screen');
 const getResultsBtn = document.getElementById('get-results-btn');
 const chatbotScreen = document.getElementById('chatbot-screen');
@@ -25,89 +24,86 @@ const backToCategoryBtn = document.getElementById('back-to-category-btn');
 let cachedResults = null;
 let currentCategory = null;
 
-// ---------- UI helpers ----------
-function showInitial() {
-  initialScreen.classList.add('active');
-  chatbotScreen.classList.remove('active');
+// ---------------- Utility: fetch & cache all results once ----------------
+async function getAllResults() {
+  if (cachedResults) return cachedResults;
+  try {
+    const snap = await database.ref('results').once('value');
+    cachedResults = snap.exists() ? snap.val() : {};
+    return cachedResults;
+  } catch (err) {
+    console.error('Error fetching results:', err);
+    throw err;
+  }
 }
-function showChatbot() {
-  initialScreen.classList.remove('active');
-  chatbotScreen.classList.add('active');
-}
-function scrollChat() { chatArea.scrollTop = chatArea.scrollHeight; }
 
-// create a message bubble, returns bubble element
-function addMessage(text = '', sender = 'bot', isHtml = false) {
+// ---------------- UI helper: addMessage with typing simulation ----------------
+function addMessage(text, sender = 'bot', isHtml = false) {
   const messageDiv = document.createElement('div');
-  messageDiv.className = `message ${sender}`;
+  messageDiv.classList.add('message', sender);
   const bubble = document.createElement('div');
-  bubble.className = 'message-bubble';
+  bubble.classList.add('message-bubble');
   if (isHtml) bubble.innerHTML = text;
   else bubble.textContent = text;
   messageDiv.appendChild(bubble);
   chatArea.appendChild(messageDiv);
-  scrollChat();
+  chatArea.scrollTop = chatArea.scrollHeight;
   return bubble;
 }
 
-// typing bubble with 3-dot animation (returns element)
 function addTypingBubble() {
-  const messageDiv = document.createElement('div');
-  messageDiv.className = 'message bot typing-bubble';
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'message bot typing-bubble';
   const bubble = document.createElement('div');
   bubble.className = 'message-bubble';
-  bubble.innerHTML = `<span class="typing-text">...</span><span class="dots"><span></span><span></span><span></span></span>`;
-  messageDiv.appendChild(bubble);
-  chatArea.appendChild(messageDiv);
-  scrollChat();
-  return messageDiv;
+  bubble.innerHTML = '<span class="typing-dots">...</span>';
+  typingDiv.appendChild(bubble);
+  chatArea.appendChild(typingDiv);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  return typingDiv;
 }
 
-// ---------- Data helpers (caching) ----------
-async function getAllResults() {
-  if (cachedResults !== null) return cachedResults;
-  const snap = await database.ref('results').once('value');
-  cachedResults = snap.exists() ? snap.val() : {};
-  return cachedResults;
-}
-
-// ---------- Category & program UI ----------
+// ---------------- Show categories (build buttons dynamically) ----------------
 async function showCategoryButtons() {
   backToCategoryBtn.style.display = 'none';
   const typing = addTypingBubble();
 
   try {
-    const allResults = await getAllResults();
-    // small delay to mimic typing UX
-    await new Promise(r => setTimeout(r, 700));
+    const all = await getAllResults();
     typing.remove();
 
-    const uniqueCategories = new Set();
-    for (const key in allResults) {
-      if (allResults[key] && allResults[key].category) uniqueCategories.add(allResults[key].category);
+    // Collect unique categories (assumes each entry has .category)
+    const categories = new Set();
+    for (let key in all) {
+      if (all[key] && all[key].category) categories.add(all[key].category);
     }
-    const categories = Array.from(uniqueCategories).sort();
-    if (!categories.length) {
-      addMessage('No categories found at the moment.', 'bot');
+    const categoryList = Array.from(categories);
+
+    if (categoryList.length === 0) {
+      addMessage('Sorry, no categories found at the moment.', 'bot');
       return;
     }
+
     const container = document.createElement('div');
-    container.className = 'category-buttons message bot';
-    categories.forEach(cat => {
+    container.classList.add('category-buttons', 'message', 'bot');
+
+    categoryList.forEach(cat => {
       const btn = document.createElement('button');
       btn.textContent = cat;
       btn.addEventListener('click', () => handleCategorySelection(cat));
       container.appendChild(btn);
     });
+
     chatArea.appendChild(container);
-    scrollChat();
+    chatArea.scrollTop = chatArea.scrollHeight;
   } catch (err) {
     typing.remove();
+    addMessage('There was an error loading categories. Please try again later.', 'bot');
     console.error(err);
-    addMessage('There was an error loading categories. Try again later.', 'bot');
   }
 }
 
+// ---------------- Category selected ----------------
 function handleCategorySelection(category) {
   addMessage(category, 'user');
   currentCategory = category;
@@ -115,162 +111,163 @@ function handleCategorySelection(category) {
   showProgramButtons(category);
 }
 
+// ---------------- Show program buttons for a category ----------------
 async function showProgramButtons(category) {
   const typing = addTypingBubble();
   try {
-    const allResults = await getAllResults();
-    await new Promise(r => setTimeout(r, 400));
+    const all = await getAllResults();
     typing.remove();
 
-    const uniquePrograms = new Set();
-    for (const key in allResults) {
-      const row = allResults[key];
-      if (row && row.category === category && row.program) uniquePrograms.add(row.program);
+    const programs = new Set();
+    for (let key in all) {
+      const entry = all[key];
+      if (entry && entry.category === category && entry.program) programs.add(entry.program);
     }
-    const programs = Array.from(uniquePrograms).sort();
-    if (!programs.length) {
-      addMessage(`No programs found for ${category}.`, 'bot');
+    const programList = Array.from(programs);
+
+    if (programList.length === 0) {
+      addMessage(`No programs found for ${category} at the moment.`, 'bot');
       backToCategoryBtn.style.display = 'block';
       return;
     }
+
     const container = document.createElement('div');
-    container.className = 'program-buttons message bot';
-    programs.forEach(prog => {
+    container.classList.add('program-buttons', 'message', 'bot');
+
+    programList.forEach(program => {
       const btn = document.createElement('button');
-      btn.textContent = prog;
-      btn.addEventListener('click', () => handleProgramSelection(category, prog));
+      btn.textContent = program;
+      btn.addEventListener('click', () => handleProgramSelection(category, program));
       container.appendChild(btn);
     });
+
     chatArea.appendChild(container);
-    scrollChat();
+    chatArea.scrollTop = chatArea.scrollHeight;
   } catch (err) {
     typing.remove();
+    addMessage('There was an error loading programs. Please try again later.', 'bot');
     console.error(err);
-    addMessage('There was an error loading programs. Try again later.', 'bot');
-    backToCategoryBtn.style.display = 'block';
   }
 }
 
-// ---------- Display image for selected program ----------
+// ---------------- Handle program selection: find image and show ----------------
 async function handleProgramSelection(category, program) {
   addMessage(program, 'user');
 
-  // show a loading card
-  const loadingCardWrap = document.createElement('div');
-  loadingCardWrap.className = 'message bot';
-  const loadingCard = document.createElement('div');
-  loadingCard.className = 'message-bubble';
-  loadingCard.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-    <div class="loading-spinner" aria-hidden="true"></div>
-    <div>Loading image...</div>
-  </div>`;
-  loadingCardWrap.appendChild(loadingCard);
-  chatArea.appendChild(loadingCardWrap);
-  scrollChat();
+  // show loading bubble
+  const loadingBubble = addMessage('Loading image...', 'bot');
+  const spinner = document.createElement('div');
+  spinner.className = 'loading-spinner';
+  loadingBubble.appendChild(spinner);
 
   try {
-    const allResults = await getAllResults();
-    // find first matching entry (you can change to collect all matches)
+    const all = await getAllResults();
+
+    // find first matching imageUrl
     let imageUrl = null;
-    for (const key in allResults) {
-      const row = allResults[key];
-      if (row && row.category === category && row.program === program && row.imageUrl) {
-        imageUrl = row.imageUrl;
+    for (let key in all) {
+      const e = all[key];
+      if (e && e.category === category && e.program === program && e.imageUrl) {
+        imageUrl = e.imageUrl;
         break;
       }
     }
 
-    // remove loading content and show actual image block
-    loadingCardWrap.remove();
+    spinner.remove();
+    loadingBubble.textContent = ''; // clear text
 
     if (!imageUrl) {
-      addMessage('Image not found for this program.', 'bot');
+      loadingBubble.textContent = 'Image not found for this program.';
       backToCategoryBtn.style.display = 'block';
       return;
     }
 
-    const imageWrap = document.createElement('div');
-    imageWrap.className = 'image-result message bot';
+    const imageResultDiv = document.createElement('div');
+    imageResultDiv.className = 'image-result';
+
     const img = document.createElement('img');
     img.src = imageUrl;
     img.alt = program;
-    imageWrap.appendChild(img);
-
-    // download button
-    const dl = document.createElement('button');
-    dl.className = 'download-icon';
-    dl.title = 'Download Image';
-    dl.addEventListener('click', () => downloadImage(imageUrl, sanitizeFilename(`${category}_${program}`)));
-    imageWrap.appendChild(dl);
-
-    // when image loads show back button
     img.onload = () => {
-      chatArea.appendChild(imageWrap);
-      scrollChat();
+      chatArea.scrollTop = chatArea.scrollHeight;
       backToCategoryBtn.style.display = 'block';
     };
     img.onerror = () => {
-      addMessage('Failed to load image (CORS or broken URL).', 'bot');
+      loadingBubble.textContent = 'Error loading image.';
       backToCategoryBtn.style.display = 'block';
     };
+    imageResultDiv.appendChild(img);
+
+    const dlButton = document.createElement('button');
+    dlButton.className = 'download-icon';
+    dlButton.title = 'Download Image';
+    dlButton.addEventListener('click', () => downloadImage(imageUrl, program));
+    imageResultDiv.appendChild(dlButton);
+
+    loadingBubble.appendChild(imageResultDiv);
+    chatArea.scrollTop = chatArea.scrollHeight;
   } catch (err) {
-    console.error(err);
-    addMessage('There was an error fetching the image. Try again later.', 'bot');
+    spinner.remove();
+    loadingBubble.textContent = 'There was an error loading the image. Please try again later.';
     backToCategoryBtn.style.display = 'block';
+    console.error(err);
   }
 }
 
-// ---------- download helper ----------
+// ---------------- Image download helper ----------------
 async function downloadImage(imageUrl, filename) {
   try {
-    const res = await fetch(imageUrl);
-    if (!res.ok) throw new Error('Network response not OK');
-    const blob = await res.blob();
-    const ext = determineExtensionFromBlobOrUrl(blob, imageUrl);
-    const url = URL.createObjectURL(blob);
+    const response = await fetch(imageUrl);
+    if (!response.ok) throw new Error('Failed to fetch image');
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    // guess extension
+    let ext = 'jpg';
+    if (blob.type.includes('png')) ext = 'png';
+    if (blob.type.includes('gif')) ext = 'gif';
+    if (blob.type.includes('webp')) ext = 'webp';
+
     const a = document.createElement('a');
     a.href = url;
     a.download = `${filename}.${ext}`;
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
   } catch (err) {
-    console.error('Download failed', err);
-    addMessage('Failed to download image. You can open the image in a new tab and save it.', 'bot');
+    console.error('Error downloading image:', err);
+    addMessage('Failed to download image. Please try in a new tab or check permissions.', 'bot');
   }
 }
-function determineExtensionFromBlobOrUrl(blob, url){
-  try{
-    const t = blob.type || '';
-    if(t.includes('png')) return 'png';
-    if(t.includes('gif')) return 'gif';
-    if(t.includes('webp')) return 'webp';
-    if(t.includes('svg')) return 'svg';
-    if(t.includes('jpeg') || t.includes('jpg')) return 'jpg';
-  }catch(e){}
-  const parts = url.split('?')[0].split('.');
-  const last = parts[parts.length-1].toLowerCase();
-  if(['jpg','jpeg','png','gif','webp','svg'].includes(last)) return last;
-  return 'jpg';
-}
-function sanitizeFilename(name){
-  return name.replace(/[<>:"/\\|?*\u0000-\u001F]/g,'_').slice(0,120);
+
+// ---------------- Screen show/hide helpers ----------------
+function showInitial() {
+  initialScreen.classList.add('active');
+  chatbotScreen.classList.remove('active');
 }
 
-// ---------- Events ----------
+function showChatbot() {
+  initialScreen.classList.remove('active');
+  chatbotScreen.classList.add('active');
+}
+
+// ---------------- Event listeners ----------------
 getResultsBtn.addEventListener('click', () => {
-  // nice fade/transition (CSS handles since screen classes toggle)
   showChatbot();
-  // small entrance message + show start button after a short delay
+  chatArea.innerHTML = '';
   addMessage('Welcome to the Sahithyotsav Results Bot!', 'bot');
-  setTimeout(()=> startButton.style.display = 'block', 600);
+  // show start button after welcome
+  startButton.style.display = 'block';
 });
 
-startButton.addEventListener('click', async () => {
+startButton.addEventListener('click', () => {
   startButton.style.display = 'none';
   chatArea.innerHTML = '';
-  await showCategoryButtons();
+  addMessage('Please select a category to view results.', 'bot');
+  showCategoryButtons();
 });
 
 backToCategoryBtn.addEventListener('click', () => {
@@ -279,6 +276,3 @@ backToCategoryBtn.addEventListener('click', () => {
   startButton.style.display = 'block';
   backToCategoryBtn.style.display = 'none';
 });
-
-// show initial screen at load
-showInitial();
