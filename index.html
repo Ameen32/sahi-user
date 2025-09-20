@@ -1,32 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maslak Results Bot</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maslak Results Bot</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase (compat for simpler usage) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
 </head>
 <body>
-    <div id="initial-screen" class="screen active">
-        <img src="your_full_image.jpeg" alt="Sahithyotsav" class="full-background-image">
-        <div class="initial-content">
-            <h1 class="logo-title">Maslak</h1>
-            <p class="subtitle">Results</p>
-            <button id="get-results-btn">Get Results</button>
-        </div>
+  <div id="initial-screen" class="screen active">
+    <img src="your_full_image.jpeg" alt="Sahithyotsav" class="full-background-image">
+    <div class="initial-content">
+      <h1 class="logo-title">Maslak</h1>
+      <p class="subtitle">Results</p>
+      <button id="get-results-btn">Get Results</button>
     </div>
+  </div>
 
-    <div id="chatbot-screen" class="screen">
-        <div class="chatbot-header">Maslak Results Bot</div>
-        <div class="chat-area" id="chat-area"></div>
-        <div class="input-area">
-            <button id="start-button" class="start-button">Start</button>
-            <div class="input-container">
-                <button id="back-to-category-btn" style="display: none;">Back to Category</button>
-            </div>
-        </div>
+  <div id="chatbot-screen" class="screen">
+    <div class="chatbot-header">Maslak Results Bot</div>
+
+    <div class="chat-area" id="chat-area"></div>
+
+    <div class="input-area">
+      <button id="start-button" class="start-button" style="display:none">Start</button>
+      <div class="input-container">
+        <button id="back-to-category-btn" style="display: none;">Back to Category</button>
+      </div>
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <!-- Script -->
+  <script src="script.js"></script>
 </body>
 </html>
