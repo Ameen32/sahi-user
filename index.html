@@ -8,11 +8,12 @@
   <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Firebase (compat for simpler usage) -->
+  <!-- Firebase (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
 </head>
 <body>
+  <!-- INITIAL SCREEN -->
   <div id="initial-screen" class="screen active">
     <img src="your_full_image.jpeg" alt="Sahithyotsav" class="full-background-image">
     <div class="initial-content">
@@ -22,20 +23,21 @@
     </div>
   </div>
 
+  <!-- CHATBOT SCREEN -->
   <div id="chatbot-screen" class="screen">
     <div class="chatbot-header">Maslak Results Bot</div>
 
     <div class="chat-area" id="chat-area"></div>
 
     <div class="input-area">
-      <button id="start-button" class="start-button" style="display:none">Start</button>
+      <button id="start-button" class="start-button" style="display:none;">Start</button>
       <div class="input-container">
-        <button id="back-to-category-btn" style="display: none;">Back to Category</button>
+        <button id="back-to-category-btn" style="display:none;">Back to Category</button>
       </div>
     </div>
   </div>
 
-  <!-- Script -->
+  <!-- Script (load after DOM) -->
   <script src="script.js"></script>
 </body>
 </html>
